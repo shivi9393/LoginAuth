@@ -1,4 +1,4 @@
-import user from '../model/User.model.js';
+import UserModel from '../model/User.model.js'
 import bcrypt from 'bcrypt';
 
 
@@ -7,8 +7,8 @@ export async function register(req,res){
         const { username, password, profile, email } = req.body;        
 
         // check the existing user
-        const existUsername = new Promise((resolve, reject) => {  
-            user.findOne({ username }, function(err, user){
+        const existUsername = new Promise((resolve, reject) => {
+            UserModel.findOne({ username }, function(err, user){
                 if(err) reject(new Error(err))
                 if(user) reject({ error : "Please use unique username"});
 
