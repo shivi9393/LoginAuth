@@ -7,11 +7,13 @@ import {Toaster} from 'react-hot-toast';
 import {useFormik} from 'formik';
 import { profileValidation } from '../helper/validate';
 import convertToBase64 from '../helper/convert'
+import useFetch from '../hooks/fetch.hook';
 
 
 export default function Profile() {
 
   const [file, setFile]=useState()
+  const [{ isLoading, apiData, serverError }] = useFetch(`/user/${username}`)
 
 
   const formik = useFormik({
