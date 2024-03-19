@@ -1,5 +1,5 @@
-import  jwt  from "jsonwebtoken";
-import ENV from '../config.js';
+import  jwt from 'jsonwebtoken';
+import ENV from '../config.js'
 
 /** auth middleware */
 export default async function Auth(req, res, next){
@@ -12,6 +12,7 @@ export default async function Auth(req, res, next){
         const decodedToken = await jwt.verify(token, ENV.JWT_SECRET);
 
         req.user = decodedToken;
+        // res.json(decodedToken);
 
         next()
 
@@ -19,6 +20,8 @@ export default async function Auth(req, res, next){
         res.status(401).json({ error : "Authentication Failed!"})
     }
 }
+
+
 export function localVariables(req, res, next){
     req.app.locals = {
         OTP : null,

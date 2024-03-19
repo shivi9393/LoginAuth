@@ -1,9 +1,10 @@
 import nodemailer from 'nodemailer';
 import Mailgen from 'mailgen';
-import ENV from '../config.js'
+
+import ENV from '../config.js';
 
 
-//https://ethereal.email/create
+// https://ethereal.email/create
 let nodeConfig = {
     host: "smtp.ethereal.email",
     port: 587,
@@ -13,7 +14,6 @@ let nodeConfig = {
         pass: ENV.PASSWORD, // generated ethereal password
     }
 }
-
 
 let transporter = nodemailer.createTransport(nodeConfig);
 
@@ -25,6 +25,14 @@ let MailGenerator = new Mailgen({
     }
 })
 
+/** POST: http://localhost:8080/api/registerMail 
+ * @param: {
+  "username" : "example123",
+  "userEmail" : "admin123",
+  "text" : "",
+  "subject" : "",
+}
+*/
 export const registerMail = async (req, res) => {
     const { username, userEmail, text, subject } = req.body;
 
