@@ -12,3 +12,17 @@ body{
     background: #dcdce6;
     background-image: url('./assets/Background.png');
 }
+
+@media (max-width: 767px) {
+    
+}
+
+/* For screens between 768px and 991px (e.g., tablets) */
+@media (min-width: 768px) and (max-width: 991px) {
+  
+}
+
+/* For screens larger than 992px (e.g., desktops) */
+@media (min-width: 992px) {
+  
+}

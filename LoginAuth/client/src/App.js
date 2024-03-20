@@ -9,6 +9,10 @@ import Register from './components/Register';
 import Recovery from './components/Recovery';
 import Reset from './components/Reset';
 import PageNotFound from './components/PageNotFound';
+import SignupPoliciesPage from './components/SignupPoliciesPage';
+
+import { AuthorizeUser } from './middleware/auth';
+import { ProtectRoute } from './middleware/auth';
 /**root routes */
 const router =createBrowserRouter([
   {
@@ -25,11 +29,11 @@ const router =createBrowserRouter([
   },
   {
     path:'/password',
-    element : <Password></Password>
+    element : <ProtectRoute><Password/></ProtectRoute>
   },
   {
     path:'/profile',
-    element : <Profile></Profile>
+    element : <AuthorizeUser><Profile/></AuthorizeUser>
   },
   {
     path:'/recovery',
@@ -38,6 +42,10 @@ const router =createBrowserRouter([
   {
     path:'/reset',
     element : <Reset></Reset>
+  },
+  {
+    path:'/policy',
+    element : <SignupPoliciesPage></SignupPoliciesPage>
   },
   {
     path:'*',

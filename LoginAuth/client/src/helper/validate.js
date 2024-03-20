@@ -1,5 +1,5 @@
 import toast from 'react-hot-toast'
-import { authenticate } from './helper'
+import { authenticate } from './helper.js'
 
 /** validate login page username */
 export async function usernameValidate(values){

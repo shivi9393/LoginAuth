@@ -24,13 +24,14 @@ export default function Register() {
     validateOnChange: false,
     onSubmit : async values =>{
       values=await Object.assign(values, {profile : file})
-      let registerPromise= registerUser(values)
-      toast.promise(registerPromise,{
+      let registerPromise = registerUser(values)
+      toast.promise(registerPromise, {
         loading: 'Creating...',
         success : <b>Register Successfully...!</b>,
-        error : <b>Could not Register.</b>        
+        error : <b>Could not Register.</b>
       });
       registerPromise.then(function(){ navigate('/')});
+
     }
   })
   /**formik dosent support file upload so we will create this function  */
@@ -61,14 +62,14 @@ export default function Register() {
             </div>
 
             <div className=' textbox flex flex-col items-center gap-6'>
-              <input {...formik.getFieldProps('email')} className={styles.textbox} type='email' placeholder='Email*'/>
+              <input {...formik.getFieldProps('email')} className={styles.textbox} type='text' placeholder='Email*'/>
               <input {...formik.getFieldProps('username')} className={styles.textbox} type='text' placeholder='Username*'/>
               <input {...formik.getFieldProps('password')} className={styles.textbox} type='text' placeholder='Password*'/>
               <button className={styles.btn} type='sumbit' >Register</button>
             </div>
 
             <div className=' text-center py-4'>
-              <span className='text-gray-500'>Already a user?<Link className='text-red-500' to='/'>Login now</Link></span>
+              <input type='checkbox'/><span className='text-gray-500'> I accept all privacy  <Link className='text-red-500' to='/Policy'>policy</Link></span>
             </div>
           </form>
 

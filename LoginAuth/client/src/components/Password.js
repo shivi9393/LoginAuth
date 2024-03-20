@@ -11,7 +11,6 @@ import styles from '../styles/Username.module.css';
 
 export default function Password() {
 
-
   const navigate = useNavigate()
   const { username } = useAuthStore(state => state.auth)
   const [{ isLoading, apiData, serverError }] = useFetch(`/user/${username}`)
@@ -24,6 +23,7 @@ export default function Password() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit : async values => {
+      // console.log(values)
       
       let loginPromise = verifyPassword({ username, password : values.password })
       toast.promise(loginPromise, {
@@ -60,11 +60,11 @@ export default function Password() {
 
           <form className='py-1' onSubmit={formik.handleSubmit}>
               <div className='profile flex justify-center py-4'>
-                  <img src={apiData?.profile || avatar} className={styles.profile_img} alt="avatar" />
+                  <img src={ apiData?.profile || avatar} className={styles.profile_img} alt="avatar" />
               </div>
 
               <div className="textbox flex flex-col items-center gap-6">
-                  <input {...formik.getFieldProps('password')} className={styles.textbox} type="text" placeholder='Password' />
+                  <input {...formik.getFieldProps('password')} className={styles.textbox} type="Password" placeholder='Password' />
                   <button className={styles.btn} type='submit'>Sign In</button>
               </div>
 
