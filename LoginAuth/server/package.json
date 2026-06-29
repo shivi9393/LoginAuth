@@ -1,27 +1,42 @@
 {
   "name": "server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Hardened authentication API (login, registration, OTP password recovery).",
+  "main": "server.js",
   "type": "module",
-  "scripts": {
-    "start": "nodemon server.js"
+  "engines": {
+    "node": ">=18"
   },
-  "keywords": [],
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "auth",
+    "jwt",
+    "express",
+    "mongoose"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
-    "express": "^4.18.2",
-    "jsonwebtoken": "^8.5.1",
-    "mailgen": "^2.0.28",
-    "mongodb-memory-server": "^8.10.2",
-    "mongoose": "^6.8.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mailgen": "^2.0.29",
+    "mongoose": "^8.9.5",
     "morgan": "^1.10.0",
-    "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.12",
-    "nodemon": "^2.0.20",
-    "otp-generator": "^4.0.1"
+    "nodemailer": "^9.0.1",
+    "otp-generator": "^4.0.1",
+    "validator": "^13.12.0"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^10.1.4",
+    "nodemon": "^3.1.9"
   }
 }

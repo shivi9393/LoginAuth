@@ -1,31 +1,28 @@
-import  jwt from 'jsonwebtoken';
-import ENV from '../config.js'
+import jwt from 'jsonwebtoken';
+import ENV from '../config.js';
 
-/** auth middleware */
-export default async function Auth(req, res, next){
+/**
+ * Verify the Bearer token on the Authorization header and attach the decoded
+ * payload to req.user. Rejects with 401 on any problem.
+ */
+export default function Auth(req, res, next) {
     try {
-        
-        // access authorize header to validate request
-        const token = req.headers.authorization.split(" ")[1];
+        const header = req.headers.authorization || '';
+        const [scheme, token] = header.split(' ');
 
-        // retrive the user details fo the logged in user
-        const decodedToken = await jwt.verify(token, ENV.JWT_SECRET);
+        if (scheme !== 'Bearer' || !token) {
+            return res.status(401).json({ error: 'Authentication failed: missing bearer token.' });
+        }
 
-        req.user = decodedToken;
-        
+        const decoded = jwt.verify(token, ENV.JWT_SECRET, {
+            algorithms: ['HS256'],
+            issuer: ENV.JWT_ISSUER,
+            audience: ENV.JWT_AUDIENCE,
+        });
 
-        next()
-
+        req.user = decoded;
+        return next();
     } catch (error) {
-        res.status(401).json({ error : "Authentication Failed!"})
+        return res.status(401).json({ error: 'Authentication failed: invalid or expired token.' });
     }
-}
-
-
-export function localVariables(req, res, next){
-    req.app.locals = {
-        OTP : null,
-        resetSession : false
-    }
-    next()
 }

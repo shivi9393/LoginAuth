@@ -1,275 +1,247 @@
-import UserModel from '../model/User.model.js'
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import ENV from '../config.js'
 import otpGenerator from 'otp-generator';
 
-/** middleware for verify user */
-export async function verifyUser(req, res, next){
-    try {
-        
-        const { username } = req.method == "GET" ? req.query : req.body;
+import UserModel from '../model/User.model.js';
+import ENV from '../config.js';
+import asyncHandler from '../utils/asyncHandler.js';
+import {
+    HttpError,
+    requireUsername,
+    requireEmail,
+    requirePassword,
+} from '../utils/validate.js';
 
-        // check the user existance
-        let exist = await UserModel.findOne({ username });
-        if(!exist) return res.status(404).send({ error : "Can't find User!"});
-        next();
+/**
+ * Middleware: confirm the user identified by `username` exists.
+ * Validates the username is a real string first (blocks NoSQL injection).
+ */
+export const verifyUser = asyncHandler(async (req, res, next) => {
+    const raw = req.method === 'GET' ? req.query.username : req.body.username;
+    const username = requireUsername(raw);
 
-    } catch (error) {
-        return res.status(404).send({ error: "Authentication Error"});
-    }
-}
+    const exists = await UserModel.exists({ username });
+    if (!exists) throw new HttpError(404, "Can't find user!");
 
+    req.username = username;
+    next();
+});
 
-/** POST: http://localhost:8080/api/register 
- * @param : {
-  "username" : "example123",
-  "password" : "admin123",
-  "email": "example@gmail.com",
-  "firstName" : "bill",
-  "lastName": "william",
-  "mobile": 8009860560,
-  "address" : "Apt. 556, Kulas Light, Gwenborough",
-  "profile": ""
-}
-*/
-export async function register(req,res){
+/**
+ * POST /api/register
+ * body: { username, password, email, profile?, firstName?, lastName?, mobile?, address? }
+ */
+export const register = asyncHandler(async (req, res) => {
+    const username = requireUsername(req.body.username);
+    const email = requireEmail(req.body.email);
+    const password = requirePassword(req.body.password);
+    const profile = typeof req.body.profile === 'string' ? req.body.profile.trim() : '';
 
-    try {
-        const { username, password, profile, email } = req.body;        
-
-        // check the existing user
-        const existUsername = new Promise((resolve, reject) => {
-            UserModel.findOne({ username }, function(err, user){
-                if(err) reject(new Error(err))
-                if(user) reject({ error : "Please use unique username"});
-
-                resolve();
-            })
-        });
-
-        // check for existing email
-        const existEmail = new Promise((resolve, reject) => {
-            UserModel.findOne({ email }, function(err, email){
-                if(err) reject(new Error(err))
-                if(email) reject({ error : "Please use unique Email"});
-
-                resolve();
-            })
-        });
-
-
-        Promise.all([existUsername, existEmail])
-            .then(() => {
-                if(password){
-                    bcrypt.hash(password, 10)
-                        .then( hashedPassword => {
-                            
-                            const user = new UserModel({
-                                username,
-                                password: hashedPassword,
-                                profile: profile || '',
-                                email
-                            });
-
-                            // return save result as a response
-                            user.save()
-                                .then(result => res.status(201).send({ msg: "User Register Successfully"}))
-                                .catch(error => res.status(500).send({error}))
-
-                        }).catch(error => {
-                            return res.status(500).send({
-                                error : "Enable to hashed password"
-                            })
-                        })
-                }
-            }).catch(error => {
-                return res.status(500).send({ error })
-            })
-
-
-    } catch (error) {
-        return res.status(500).send(error);
+    // Friendly pre-check; the unique index is the real guarantee against races.
+    const clash = await UserModel.findOne({ $or: [{ username }, { email }] })
+        .select('username email')
+        .lean();
+    if (clash) {
+        const field = clash.username === username ? 'username' : 'email';
+        throw new HttpError(409, `Please use a unique ${field}.`);
     }
 
-}
-
-
-/** POST: http://localhost:8080/api/login 
- * @param: {
-  "username" : "example123",
-  "password" : "admin123"
-}
-*/
-export async function login(req,res){
-   
-    const { username, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, ENV.BCRYPT_ROUNDS);
 
     try {
-        
-        UserModel.findOne({ username })
-            .then(user => {
-                bcrypt.compare(password, user.password)
-                    .then(passwordCheck => {
-
-                        if(!passwordCheck) return res.status(400).send({ error: "Don't have Password"});
-
-                        // create jwt token
-                        const token = jwt.sign({
-                                        userId: user._id,
-                                        username : user.username
-                                    }, ENV.JWT_SECRET , { expiresIn : "24h"});
-
-                        return res.status(200).send({
-                            msg: "Login Successful...!",
-                            username: user.username,
-                            token
-                        });                                    
-
-                    })
-                    .catch(error =>{
-                        return res.status(400).send({ error: "Password does not Match"})
-                    })
-            })
-            .catch( error => {
-                return res.status(404).send({ error : "Username not Found"});
-            })
-
-    } catch (error) {
-        return res.status(500).send({ error});
-    }
-}
-
-
-/** GET: http://localhost:8080/api/user/example123 */
-export async function getUser(req,res){
-    
-    const { username } = req.params;
-
-    try {
-        
-        if(!username) return res.status(501).send({ error: "Invalid Username"});
-
-        UserModel.findOne({ username }, function(err, user){
-            if(err) return res.status(500).send({ err });
-            if(!user) return res.status(501).send({ error : "Couldn't Find the User"});
-
-            /** remove password from user */
-            // mongoose return unnecessary data with object so convert it into json
-            const { password, ...rest } = Object.assign({}, user.toJSON());
-
-            return res.status(201).send(rest);
-        })
-
-    } catch (error) {
-        return res.status(404).send({ error : "Cannot Find User Data"});
-    }
-
-}
-
-
-/** PUT: http://localhost:8080/api/updateuser 
- * @param: {
-  "id" : "<userid>"
-}
-body: {
-    firstName: '',
-    address : '',
-    profile : ''
-}
-*/
-export async function updateUser(req,res){
-    try {
-        
-        // const id = req.query.id;
-        const { userId } = req.user;
-
-        if(userId){
-            const body = req.body;
-
-            // update the data
-            UserModel.updateOne({ _id : userId }, body, function(err, data){
-                if(err) throw err;
-
-                return res.status(201).send({ msg : "Record Updated....!"});
-            })
-
-        }else{
-            return res.status(401).send({ error : "User Not Found....!"});
+        await UserModel.create({ username, email, password: hashedPassword, profile });
+    } catch (err) {
+        // Duplicate key from a concurrent insert slipping past the pre-check.
+        if (err && err.code === 11000) {
+            throw new HttpError(409, 'Please use a unique username and email.');
         }
-
-    } catch (error) {
-        return res.status(401).send({ error });
+        throw err;
     }
-}
 
+    return res.status(201).send({ msg: 'User registered successfully' });
+});
 
-/** GET: http://localhost:8080/api/generateOTP */
-export async function generateOTP(req,res){
-    req.app.locals.OTP = await otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false})
-    res.status(201).send({ code: req.app.locals.OTP })
-}
+/**
+ * POST /api/login
+ * body: { username, password }
+ */
+export const login = asyncHandler(async (req, res) => {
+    const username = requireUsername(req.body.username);
+    const password = requirePassword(req.body.password);
 
+    const user = await UserModel.findOne({ username }).select('+password');
+    // Generic message regardless of which half failed (no enumeration here).
+    const ok = user && (await bcrypt.compare(password, user.password));
+    if (!ok) throw new HttpError(401, 'Incorrect username or password.');
 
-/** GET: http://localhost:8080/api/verifyOTP */
-export async function verifyOTP(req,res){
-    const { code } = req.query;
-    if(parseInt(req.app.locals.OTP) === parseInt(code)){
-        req.app.locals.OTP = null; // reset the OTP value
-        req.app.locals.resetSession = true; // start session for reset password
-        return res.status(201).send({ msg: 'Verify Successsfully!'})
-    }
-    return res.status(400).send({ error: "Invalid OTP"});
-}
-
-
-// successfully redirect user when OTP is valid
-/** GET: http://localhost:8080/api/createResetSession */
-export async function createResetSession(req,res){
-   if(req.app.locals.resetSession){
-        return res.status(201).send({ flag : req.app.locals.resetSession})
-   }
-   return res.status(440).send({error : "Session expired!"})
-}
-
-
-// update the password when we have valid session
-/** PUT: http://localhost:8080/api/resetPassword */
-export async function resetPassword(req,res){
-    try {
-        
-        if(!req.app.locals.resetSession) return res.status(440).send({error : "Session expired!"});
-
-        const { username, password } = req.body;
-
-        try {
-            
-            UserModel.findOne({ username})
-                .then(user => {
-                    bcrypt.hash(password, 10)
-                        .then(hashedPassword => {
-                            UserModel.updateOne({ username : user.username },
-                            { password: hashedPassword}, function(err, data){
-                                if(err) throw err;
-                                req.app.locals.resetSession = false; // reset session
-                                return res.status(201).send({ msg : "Record Updated...!"})
-                            });
-                        })
-                        .catch( e => {
-                            return res.status(500).send({
-                                error : "Enable to hashed password"
-                            })
-                        })
-                })
-                .catch(error => {
-                    return res.status(404).send({ error : "Username not Found"});
-                })
-
-        } catch (error) {
-            return res.status(500).send({ error })
+    const token = jwt.sign(
+        { userId: user._id, username: user.username },
+        ENV.JWT_SECRET,
+        {
+            algorithm: 'HS256',
+            expiresIn: ENV.JWT_EXPIRY,
+            issuer: ENV.JWT_ISSUER,
+            audience: ENV.JWT_AUDIENCE,
         }
+    );
 
-    } catch (error) {
-        return res.status(401).send({ error })
+    return res.status(200).send({
+        msg: 'Login successful...!',
+        username: user.username,
+        token,
+    });
+});
+
+/**
+ * GET /api/user/:username
+ */
+export const getUser = asyncHandler(async (req, res) => {
+    const username = requireUsername(req.params.username);
+
+    const user = await UserModel.findOne({ username });
+    if (!user) throw new HttpError(404, "Couldn't find the user");
+
+    // toJSON transform strips password and all reset/internal fields.
+    return res.status(200).send(user.toJSON());
+});
+
+/**
+ * PUT /api/updateuser   (requires Auth)
+ * Updates only an allow-listed set of profile fields for the *token's* user.
+ */
+export const updateUser = asyncHandler(async (req, res) => {
+    const { userId } = req.user || {};
+    if (!userId) throw new HttpError(401, 'User not found...!');
+
+    const allowed = ['firstName', 'lastName', 'mobile', 'address', 'profile', 'email'];
+    const update = {};
+    for (const key of allowed) {
+        if (req.body[key] !== undefined) update[key] = req.body[key];
     }
-}
+    if (update.email !== undefined) update.email = requireEmail(update.email);
+
+    await UserModel.updateOne({ _id: userId }, { $set: update }, { runValidators: true });
+    return res.status(200).send({ msg: 'Record updated...!' });
+});
+
+/**
+ * GET /api/generateOTP?username=...
+ * Generates a 6-digit OTP, stores it hashed with an expiry on the user, and
+ * returns the code so the existing client can email it.
+ *
+ * NOTE: returning the code in the response preserves the current client flow.
+ * The stronger design is to email it server-side and never return it — planned
+ * for the client pass.
+ */
+export const generateOTP = asyncHandler(async (req, res) => {
+    const username = req.username; // set by verifyUser
+
+    const code = otpGenerator.generate(6, {
+        lowerCaseAlphabets: false,
+        upperCaseAlphabets: false,
+        specialChars: false,
+    });
+
+    const resetOTPHash = await bcrypt.hash(code, ENV.BCRYPT_ROUNDS);
+    await UserModel.updateOne(
+        { username },
+        {
+            $set: {
+                resetOTPHash,
+                resetOTPExpires: new Date(Date.now() + ENV.OTP_TTL_MS),
+                resetVerified: false,
+                resetVerifiedExpires: null,
+            },
+        }
+    );
+
+    return res.status(201).send({ code });
+});
+
+/**
+ * GET /api/verifyOTP?username=...&code=...
+ * Verifies the OTP against the per-user hash + expiry, then opens a short
+ * password-reset window for that user only.
+ */
+export const verifyOTP = asyncHandler(async (req, res) => {
+    const username = req.username; // set by verifyUser
+    const code = typeof req.query.code === 'string' ? req.query.code.trim() : '';
+    if (!code) throw new HttpError(400, 'OTP code is required.');
+
+    const user = await UserModel.findOne({ username }).select(
+        '+resetOTPHash +resetOTPExpires'
+    );
+
+    const valid =
+        user &&
+        user.resetOTPHash &&
+        user.resetOTPExpires &&
+        user.resetOTPExpires.getTime() > Date.now() &&
+        (await bcrypt.compare(code, user.resetOTPHash));
+
+    if (!valid) throw new HttpError(400, 'Invalid or expired OTP');
+
+    // Consume the OTP and open the reset window for this user.
+    await UserModel.updateOne(
+        { username },
+        {
+            $set: {
+                resetVerified: true,
+                resetVerifiedExpires: new Date(Date.now() + ENV.RESET_WINDOW_MS),
+            },
+            $unset: { resetOTPHash: '', resetOTPExpires: '' },
+        }
+    );
+
+    return res.status(201).send({ msg: 'Verified successfully!' });
+});
+
+/**
+ * GET /api/createResetSession
+ * UI gate only. The real authorization happens per-user in resetPassword,
+ * which independently verifies the reset window, so this stays permissive.
+ */
+export const createResetSession = asyncHandler(async (_req, res) => {
+    return res.status(201).send({ flag: true });
+});
+
+/**
+ * PUT /api/resetPassword
+ * body: { username, password }
+ * Only succeeds inside a valid, unexpired reset window opened by verifyOTP for
+ * that specific user.
+ */
+export const resetPassword = asyncHandler(async (req, res) => {
+    const username = requireUsername(req.body.username);
+    const password = requirePassword(req.body.password);
+
+    const user = await UserModel.findOne({ username }).select(
+        '+resetVerified +resetVerifiedExpires'
+    );
+    if (!user) throw new HttpError(404, 'Username not found');
+
+    const windowOpen =
+        user.resetVerified &&
+        user.resetVerifiedExpires &&
+        user.resetVerifiedExpires.getTime() > Date.now();
+    if (!windowOpen) {
+        throw new HttpError(440, 'Reset session expired! Please verify your OTP again.');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, ENV.BCRYPT_ROUNDS);
+    await UserModel.updateOne(
+        { username },
+        {
+            $set: { password: hashedPassword },
+            // Close the reset window so the OTP/session can't be reused.
+            $unset: {
+                resetVerified: '',
+                resetVerifiedExpires: '',
+                resetOTPHash: '',
+                resetOTPExpires: '',
+            },
+        }
+    );
+
+    return res.status(201).send({ msg: 'Record updated...!' });
+});

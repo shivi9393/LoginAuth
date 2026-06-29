@@ -2,63 +2,63 @@ import nodemailer from 'nodemailer';
 import Mailgen from 'mailgen';
 
 import ENV from '../config.js';
+import asyncHandler from '../utils/asyncHandler.js';
+import { HttpError, requireEmail, requireString } from '../utils/validate.js';
 
+// SMTP transport. Configure via environment (see .env.example).
+// https://ethereal.email/create can generate test credentials.
+const transporter = nodemailer.createTransport({
+    host: ENV.EMAIL_HOST,
+    port: ENV.EMAIL_PORT,
+    secure: ENV.EMAIL_SECURE, // true for 465, false for STARTTLS on 587
+    auth: ENV.EMAIL
+        ? { user: ENV.EMAIL, pass: ENV.PASSWORD }
+        : undefined,
+});
 
-// https://ethereal.email/create
-let nodeConfig = {
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-        user: ENV.EMAIL, // generated ethereal user
-        pass: ENV.PASSWORD, // generated ethereal password
+const MailGenerator = new Mailgen({
+    theme: 'default',
+    product: {
+        name: 'LoginAuth',
+        link: 'https://mailgen.js/',
+    },
+});
+
+/**
+ * POST /api/registerMail
+ * body: { username, userEmail, text?, subject? }
+ */
+export const registerMail = asyncHandler(async (req, res) => {
+    const username = requireString(req.body.username, 'Username', { min: 1, max: 60 });
+    const userEmail = requireEmail(req.body.userEmail);
+    // Optional fields — coerce to safe strings, cap length to avoid abuse.
+    const text =
+        typeof req.body.text === 'string'
+            ? req.body.text.slice(0, 1000)
+            : "Welcome to Daily Tuition! We're very excited to have you on board.";
+    const subject =
+        typeof req.body.subject === 'string' && req.body.subject.trim()
+            ? req.body.subject.slice(0, 150)
+            : 'Signup Successful';
+
+    if (!ENV.EMAIL) {
+        throw new HttpError(503, 'Email service is not configured on the server.');
     }
-}
 
-let transporter = nodemailer.createTransport(nodeConfig);
-
-let MailGenerator = new Mailgen({
-    theme: "default",
-    product : {
-        name: "Mailgen",
-        link: 'https://mailgen.js/'
-    }
-})
-
-/** POST: http://localhost:8080/api/registerMail 
- * @param: {
-  "username" : "example123",
-  "userEmail" : "admin123",
-  "text" : "",
-  "subject" : "",
-}
-*/
-export const registerMail = async (req, res) => {
-    const { username, userEmail, text, subject } = req.body;
-
-    // body of the email
-    var email = {
-        body : {
+    const emailBody = MailGenerator.generate({
+        body: {
             name: username,
-            intro : text || 'Welcome to Daily Tuition! We\'re very excited to have you on board.',
-            outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
-        }
-    }
+            intro: text,
+            outro: "Need help, or have questions? Just reply to this email, we'd love to help.",
+        },
+    });
 
-    var emailBody = MailGenerator.generate(email);
-
-    let message = {
-        from : ENV.EMAIL,
+    await transporter.sendMail({
+        from: ENV.EMAIL_FROM,
         to: userEmail,
-        subject : subject || "Signup Successful",
-        html : emailBody
-    }
+        subject,
+        html: emailBody,
+    });
 
-    // send mail
-    transporter.sendMail(message)
-        .then(() => {
-            return res.status(200).send({ msg: "You should receive an email from us."})
-        })
-        .catch(error => res.status(500).send({ error }))
-
-}
+    return res.status(200).send({ msg: 'You should receive an email from us.' });
+});
