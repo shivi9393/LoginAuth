@@ -8,24 +8,26 @@ module.exports = {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
+        // deep Pandora-night jungle base
         ink: {
-          900: '#05060f',
-          800: '#0a0b1e',
-          700: '#0f1230',
-          600: '#161a44',
+          900: '#03110c',
+          800: '#05180f',
+          700: '#082218',
+          600: '#0c2e21',
         },
+        // bioluminescent accents (key names kept stable; values are jungle glow)
         neon: {
-          violet: '#8b5cf6',
-          indigo: '#6366f1',
-          cyan: '#22d3ee',
-          pink: '#ec4899',
-          mint: '#34d399',
+          violet: '#2dd4bf', // teal — primary glow
+          indigo: '#10b981', // emerald — deep glow
+          cyan: '#22d3ee', // bio cyan
+          pink: '#e879f9', // fuchsia bloom
+          mint: '#a3e635', // lime pollen
         },
       },
       boxShadow: {
-        glow: '0 0 40px -8px rgba(139,92,246,0.55)',
+        glow: '0 0 40px -8px rgba(45,212,191,0.55)',
         'glow-cyan': '0 0 40px -8px rgba(34,211,238,0.55)',
-        card: '0 30px 80px -20px rgba(0,0,0,0.65)',
+        card: '0 30px 80px -20px rgba(0,0,0,0.7)',
         inset: 'inset 0 1px 0 0 rgba(255,255,255,0.08)',
       },
       backdropBlur: {
@@ -35,6 +37,11 @@ module.exports = {
         floaty: {
           '0%,100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-14px)' },
+        },
+        drift: {
+          '0%': { transform: 'translateY(0) translateX(0)' },
+          '50%': { transform: 'translateY(-10px) translateX(6px)' },
+          '100%': { transform: 'translateY(0) translateX(0)' },
         },
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
@@ -54,6 +61,7 @@ module.exports = {
       },
       animation: {
         floaty: 'floaty 6s ease-in-out infinite',
+        drift: 'drift 9s ease-in-out infinite',
         shimmer: 'shimmer 2.5s linear infinite',
         'gradient-pan': 'gradient-pan 8s ease infinite',
         'spin-slow': 'spin-slow 18s linear infinite',

@@ -54,7 +54,7 @@ export default function AuthShell({ eyebrow, title, subtitle, children, footer, 
               {title}
             </h1>
             {subtitle && (
-              <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-indigo-100/60">
+              <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-emerald-100/60">
                 {subtitle}
               </p>
             )}
@@ -63,7 +63,7 @@ export default function AuthShell({ eyebrow, title, subtitle, children, footer, 
           {children}
 
           {footer && (
-            <motion.div variants={fadeUp} className="mt-7 text-center text-sm text-indigo-100/60">
+            <motion.div variants={fadeUp} className="mt-7 text-center text-sm text-emerald-100/60">
               {footer}
             </motion.div>
           )}

@@ -10,7 +10,7 @@ export default function Field({ icon: Icon, field, type = 'text', placeholder, a
   return (
     <motion.label variants={fadeUp} className={`relative block w-full ${className}`}>
       {Icon && (
-        <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300/70">
+        <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-teal-300/70">
           <Icon />
         </span>
       )}

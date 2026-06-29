@@ -5,8 +5,8 @@
 @tailwind utilities;
 
 :root {
-  --grad-primary: linear-gradient(135deg, #8b5cf6 0%, #6366f1 45%, #22d3ee 100%);
-  --grad-pink: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+  --grad-primary: linear-gradient(135deg, #34d399 0%, #2dd4bf 45%, #22d3ee 100%);
+  --grad-bio: linear-gradient(135deg, #a3e635 0%, #2dd4bf 50%, #e879f9 100%);
 }
 
 * {
@@ -23,12 +23,13 @@ body {
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  color: #e7e9ff;
-  background-color: #05060f;
+  color: #e3fbef;
+  background-color: #03110c;
   background-image:
-    radial-gradient(900px 600px at 12% -10%, rgba(139, 92, 246, 0.22), transparent 60%),
-    radial-gradient(800px 600px at 100% 0%, rgba(34, 211, 238, 0.16), transparent 55%),
-    radial-gradient(900px 700px at 50% 120%, rgba(236, 72, 153, 0.14), transparent 60%);
+    radial-gradient(900px 620px at 12% -10%, rgba(45, 212, 191, 0.22), transparent 60%),
+    radial-gradient(820px 600px at 100% 5%, rgba(34, 211, 238, 0.16), transparent 55%),
+    radial-gradient(700px 600px at 85% 95%, rgba(232, 121, 249, 0.16), transparent 60%),
+    radial-gradient(900px 700px at 25% 120%, rgba(163, 230, 53, 0.14), transparent 60%);
   background-attachment: fixed;
   overflow-x: hidden;
 }
@@ -43,48 +44,48 @@ h1, h2, h3, h4, h5 {
   .glass-card {
     position: relative;
     border-radius: 28px;
-    background: linear-gradient(160deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.02));
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(22px) saturate(140%);
-    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    background: linear-gradient(160deg, rgba(180, 255, 224, 0.08), rgba(10, 40, 30, 0.06));
+    border: 1px solid rgba(120, 240, 200, 0.16);
+    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.7), inset 0 1px 0 0 rgba(180, 255, 224, 0.1);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
   }
 
-  /* animated conic gradient ring around a card */
+  /* animated bioluminescent ring around a card */
   .glass-card::before {
     content: '';
     position: absolute;
     inset: -1px;
     border-radius: inherit;
     padding: 1px;
-    background: conic-gradient(from 180deg, rgba(139, 92, 246, 0.0), rgba(139, 92, 246, 0.65), rgba(34, 211, 238, 0.65), rgba(236, 72, 153, 0.5), rgba(139, 92, 246, 0.0));
+    background: conic-gradient(from 180deg, rgba(45, 212, 191, 0.0), rgba(45, 212, 191, 0.7), rgba(34, 211, 238, 0.6), rgba(232, 121, 249, 0.55), rgba(163, 230, 53, 0.5), rgba(45, 212, 191, 0.0));
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    opacity: 0.55;
+    opacity: 0.6;
     pointer-events: none;
   }
 
   .field {
     width: 100%;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(120, 240, 200, 0.05);
+    border: 1px solid rgba(120, 240, 200, 0.14);
     border-radius: 14px;
     padding: 16px 16px 16px 46px;
-    color: #f3f4ff;
+    color: #ecfff6;
     font-size: 15px;
     transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
     outline: none;
   }
 
   .field::placeholder {
-    color: rgba(231, 233, 255, 0.4);
+    color: rgba(190, 245, 224, 0.42);
   }
 
   .field:focus {
-    border-color: rgba(139, 92, 246, 0.8);
-    background: rgba(139, 92, 246, 0.06);
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.14);
+    border-color: rgba(45, 212, 191, 0.85);
+    background: rgba(45, 212, 191, 0.07);
+    box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.16);
   }
 
   .btn-grad {
@@ -94,10 +95,10 @@ h1, h2, h3, h4, h5 {
     padding: 15px 22px;
     font-weight: 600;
     font-size: 15px;
-    color: white;
-    background: linear-gradient(120deg, #8b5cf6, #6366f1 40%, #22d3ee);
+    color: #042018;
+    background: linear-gradient(120deg, #34d399, #2dd4bf 45%, #22d3ee);
     background-size: 200% 100%;
-    box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.7);
+    box-shadow: 0 12px 30px -10px rgba(45, 212, 191, 0.75);
     overflow: hidden;
     transition: background-position 0.5s ease, transform 0.15s ease;
   }
@@ -113,7 +114,7 @@ h1, h2, h3, h4, h5 {
     left: -150%;
     width: 60%;
     height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.45), transparent);
     transition: left 0.6s ease;
   }
 
@@ -122,7 +123,7 @@ h1, h2, h3, h4, h5 {
   }
 
   .text-gradient {
-    background: linear-gradient(120deg, #c4b5fd, #818cf8 40%, #67e8f9);
+    background: linear-gradient(120deg, #6ee7b7, #5eead4 45%, #67e8f9);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -137,9 +138,9 @@ h1, h2, h3, h4, h5 {
     font-size: 12px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #c7d2fe;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #a7f3d0;
+    background: rgba(45, 212, 191, 0.08);
+    border: 1px solid rgba(120, 240, 200, 0.18);
   }
 }
 
@@ -161,10 +162,10 @@ input[type='file'] {
   width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #05060f;
+  background: #03110c;
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(#6366f1, #22d3ee);
+  background: linear-gradient(#2dd4bf, #a3e635);
   border-radius: 999px;
 }
 

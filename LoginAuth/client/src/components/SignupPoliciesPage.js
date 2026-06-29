@@ -44,12 +44,12 @@ export default function SignupPoliciesPage() {
             variants={fadeUp}
             className="flex gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4"
           >
-            <span className="mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-tr from-neon-violet/30 to-neon-cyan/30 text-indigo-200">
+            <span className="mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-tr from-neon-violet/30 to-neon-cyan/30 text-emerald-200">
               <Icon width={20} height={20} />
             </span>
             <div>
               <h3 className="font-display text-base font-semibold text-white">{title}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-indigo-100/60">{body}</p>
+              <p className="mt-1 text-sm leading-relaxed text-emerald-100/60">{body}</p>
             </div>
           </motion.div>
         ))}

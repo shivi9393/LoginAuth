@@ -20,9 +20,9 @@ export default function PageNotFound() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.5 }}
-          className="mx-auto -mt-2 max-w-sm text-sm text-indigo-100/70"
+          className="mx-auto -mt-2 max-w-sm text-sm text-emerald-100/70"
         >
-          This page drifted off into the void. Let&apos;s get you back to safe orbit.
+          This trail vanished into the deep jungle. Let&apos;s get you back to the clearing.
         </motion.p>
 
         <motion.div

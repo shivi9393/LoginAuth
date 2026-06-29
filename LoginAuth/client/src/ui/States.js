@@ -14,7 +14,7 @@ export function Loader({ label = 'Loading' }) {
         initial={{ opacity: 0.3 }}
         animate={{ opacity: 1 }}
         transition={{ repeat: Infinity, repeatType: 'reverse', duration: 0.9 }}
-        className="text-sm tracking-wide text-indigo-100/70"
+        className="text-sm tracking-wide text-emerald-100/70"
       >
         {label}…
       </motion.p>

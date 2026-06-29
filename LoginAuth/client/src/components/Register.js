@@ -73,7 +73,7 @@ export default function Register() {
           autoComplete="new-password"
         />
 
-        <motion.label variants={fadeUp} className="flex cursor-pointer items-start gap-3 text-sm text-indigo-100/70">
+        <motion.label variants={fadeUp} className="flex cursor-pointer items-start gap-3 text-sm text-emerald-100/70">
           <input
             type="checkbox"
             checked={accepted}

@@ -49,7 +49,7 @@ export default function OtpInput({ length = 6, value = '', onChange }) {
           inputMode="numeric"
           maxLength={1}
           aria-label={`Digit ${i + 1}`}
-          className="h-14 w-11 rounded-xl border border-white/12 bg-white/[0.04] text-center font-display text-2xl font-semibold text-white outline-none transition focus:border-neon-violet/80 focus:bg-neon-violet/10 focus:shadow-[0_0_0_4px_rgba(139,92,246,0.14)] sm:w-12"
+          className="h-14 w-11 rounded-xl border border-white/12 bg-white/[0.04] text-center font-display text-2xl font-semibold text-white outline-none transition focus:border-neon-violet/80 focus:bg-neon-violet/10 focus:shadow-[0_0_0_4px_rgba(45,212,191,0.16)] sm:w-12"
         />
       ))}
     </motion.div>
