@@ -1,28 +1,177 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* > *{
-    font-family: "Poppins", sans-serif;
+:root {
+  --grad-primary: linear-gradient(135deg, #8b5cf6 0%, #6366f1 45%, #22d3ee 100%);
+  --grad-pink: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
 }
 
-body{
-    background: #dcdce6;
-    background-image: url('./assets/Background.png');
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@media (max-width: 767px) {
-    
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
 }
 
-/* For screens between 768px and 991px (e.g., tablets) */
-@media (min-width: 768px) and (max-width: 991px) {
-  
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #e7e9ff;
+  background-color: #05060f;
+  background-image:
+    radial-gradient(900px 600px at 12% -10%, rgba(139, 92, 246, 0.22), transparent 60%),
+    radial-gradient(800px 600px at 100% 0%, rgba(34, 211, 238, 0.16), transparent 55%),
+    radial-gradient(900px 700px at 50% 120%, rgba(236, 72, 153, 0.14), transparent 60%);
+  background-attachment: fixed;
+  overflow-x: hidden;
 }
 
-/* For screens larger than 992px (e.g., desktops) */
-@media (min-width: 992px) {
-  
+h1, h2, h3, h4, h5 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- Reusable component layer ---------- */
+@layer components {
+  .glass-card {
+    position: relative;
+    border-radius: 28px;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+  }
+
+  /* animated conic gradient ring around a card */
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(from 180deg, rgba(139, 92, 246, 0.0), rgba(139, 92, 246, 0.65), rgba(34, 211, 238, 0.65), rgba(236, 72, 153, 0.5), rgba(139, 92, 246, 0.0));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .field {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 16px 16px 16px 46px;
+    color: #f3f4ff;
+    font-size: 15px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    outline: none;
+  }
+
+  .field::placeholder {
+    color: rgba(231, 233, 255, 0.4);
+  }
+
+  .field:focus {
+    border-color: rgba(139, 92, 246, 0.8);
+    background: rgba(139, 92, 246, 0.06);
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.14);
+  }
+
+  .btn-grad {
+    position: relative;
+    width: 100%;
+    border-radius: 14px;
+    padding: 15px 22px;
+    font-weight: 600;
+    font-size: 15px;
+    color: white;
+    background: linear-gradient(120deg, #8b5cf6, #6366f1 40%, #22d3ee);
+    background-size: 200% 100%;
+    box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.7);
+    overflow: hidden;
+    transition: background-position 0.5s ease, transform 0.15s ease;
+  }
+
+  .btn-grad:hover {
+    background-position: 100% 0;
+  }
+
+  .btn-grad::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transition: left 0.6s ease;
+  }
+
+  .btn-grad:hover::after {
+    left: 150%;
+  }
+
+  .text-gradient {
+    background: linear-gradient(120deg, #c4b5fd, #818cf8 40%, #67e8f9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #c7d2fe;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* canvas always behind content */
+.scene-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* hide raw file inputs (used for avatar upload) */
+input[type='file'] {
+  display: none;
+}
+
+/* custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #05060f;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(#6366f1, #22d3ee);
+  border-radius: 999px;
+}
+
+/* respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }

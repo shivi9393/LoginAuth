@@ -37,9 +37,13 @@ export async function registerUser(credentials){
 
         let { username, email } = credentials;
 
-        /** send email */
+        /** Welcome email is best-effort — never fail registration if SMTP isn't configured. */
         if(status === 201){
-            await axios.post('/api/registerMail', { username, userEmail : email, text : msg})
+            try {
+                await axios.post('/api/registerMail', { username, userEmail : email, text : msg})
+            } catch (mailErr) {
+                console.warn('Welcome email not sent:', mailErr?.response?.data?.error || mailErr.message)
+            }
         }
 
         return Promise.resolve(msg)
@@ -80,11 +84,18 @@ export async function generateOTP(username){
     try {
         const {data : { code }, status } = await axios.get('/api/generateOTP', { params : { username }});
 
-        // send mail with the OTP
+        // Best-effort: email the code if SMTP is configured (won't break the flow otherwise).
         if(status === 201){
-            let { data : { email }} = await getUser({ username });
-            let text = `Your Password Recovery OTP is ${code}. Verify and recover your password.`;
-            await axios.post('/api/registerMail', { username, userEmail: email, text, subject : "Password Recovery OTP"})
+            try {
+                const { data } = await getUser({ username });
+                const email = data?.email;
+                if(email){
+                    const text = `Your Password Recovery OTP is ${code}. Verify and recover your password.`;
+                    await axios.post('/api/registerMail', { username, userEmail: email, text, subject : "Password Recovery OTP"})
+                }
+            } catch (mailErr) {
+                console.warn('OTP email not sent:', mailErr?.response?.data?.error || mailErr.message)
+            }
         }
         return Promise.resolve(code);
     } catch (error) {

@@ -1,36 +1,59 @@
 import React from 'react';
-// import styles from '../styles/Username.module.css';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
-function SignupPoliciesPage() {
+import AuthShell from '../ui/AuthShell';
+import { fadeUp } from '../ui/motion';
+import { ShieldIcon, LockIcon, KeyIcon } from '../ui/icons';
+
+const POLICIES = [
+  {
+    icon: ShieldIcon,
+    title: 'Your data, protected',
+    body: 'Passwords are hashed with bcrypt and never stored in plain text. We only keep what is needed to run your account.',
+  },
+  {
+    icon: LockIcon,
+    title: 'Secure by default',
+    body: 'Every request is rate-limited, sanitized against injection, and served over hardened HTTP security headers.',
+  },
+  {
+    icon: KeyIcon,
+    title: 'You stay in control',
+    body: 'Reset your password any time with a one-time code sent to your email. Sessions are short-lived and revocable.',
+  },
+];
+
+export default function SignupPoliciesPage() {
   return (
-    <div className="flex justify-center items-center h-full">
-      <div className="max-w-md p-4 bg-white shadow-md rounded-md">
-        <h1 className="text-2xl font-bold mb-4">Signup Policies</h1>
-        <p className="mb-2">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ut
-          nisl id purus convallis ultricies. Vestibulum sit amet eros id nunc
-          malesuada convallis.
-        </p>
-        <p className="mb-2">
-          Mauris vel tellus et mauris porta lacinia. Duis non dui vel urna
-          fringilla vulputate ac at sapien. Nam rutrum, purus id lacinia
-          ultrices, felis velit eleifend odio, a sollicitudin sapien lacus et
-          justo.
-        </p>
-        <p className="mb-2">
-          Proin sit amet ligula aliquet, dictum mauris eget, accumsan arcu.
-          Vivamus semper tortor id metus volutpat, sed tempor orci feugiat.
-          Fusce nec lobortis justo, vitae dapibus justo.
-        </p>
-        <p>
-          Sed lacinia, libero id dictum pharetra, arcu libero pharetra dolor,
-          non vestibulum turpis dui ac justo. Cras suscipit, nisi a posuere
-          condimentum, neque odio dignissim lectus, vel pellentesque ipsum orci
-          vitae ligula.
-        </p>
+    <AuthShell
+      eyebrow="Privacy policy"
+      title="How we keep you safe"
+      subtitle="A quick summary of how LoginAuth handles your account and your data."
+      size="md"
+      footer={
+        <Link className="font-medium text-gradient hover:opacity-80" to="/register">
+          ← Back to registration
+        </Link>
+      }
+    >
+      <div className="space-y-4">
+        {POLICIES.map(({ icon: Icon, title, body }) => (
+          <motion.div
+            key={title}
+            variants={fadeUp}
+            className="flex gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4"
+          >
+            <span className="mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-tr from-neon-violet/30 to-neon-cyan/30 text-indigo-200">
+              <Icon width={20} height={20} />
+            </span>
+            <div>
+              <h3 className="font-display text-base font-semibold text-white">{title}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-indigo-100/60">{body}</p>
+            </div>
+          </motion.div>
+        ))}
       </div>
-    </div>
+    </AuthShell>
   );
 }
-
-export default SignupPoliciesPage;

@@ -1,70 +1,48 @@
-# Getting Started with Create React App
+# LoginAuth — Client
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, animated front-end for the LoginAuth API. Built with React 18, a live
+WebGL backdrop (three.js / react-three-fiber + postprocessing bloom), and
+framer-motion page transitions on a glassmorphism design system.
 
-## Available Scripts
+## Stack
 
-In the project directory, you can run:
+- **React 18** + **react-router-dom 6** (animated routes via `AnimatePresence`)
+- **@react-three/fiber** + **@react-three/drei** + **@react-three/postprocessing** — the persistent 3D scene (`src/three/Scene.js`)
+- **framer-motion** — page, card, and micro-interaction animations (`src/ui/motion.js`)
+- **Tailwind CSS** — design tokens, glass cards, gradients (`tailwind.config.js`, `src/index.css`)
+- **formik** + custom validators, **zustand** store, **axios** API helpers, **react-hot-toast**
 
-### `npm start`
+## Project layout
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```
+src/
+  three/Scene.js        3D backdrop (orb, neon rings, shards, sparkles, bloom)
+  ui/                   Design system: AuthShell, Field, GradientButton,
+                        AvatarUpload, OtpInput, States, icons, motion
+  components/           Pages: Username, Password, Register, Recovery, Reset,
+                        Profile, SignupPoliciesPage, PageNotFound
+  helper/, hooks/, store/, middleware/   API + auth glue (unchanged contract)
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Setup
 
-### `npm test`
+1. Copy env: `cp .env.example .env` and set `REACT_APP_SERVER_DOMAIN`
+   (defaults to the API at `http://localhost:8080`).
+2. Install: `npm install`
+3. Run: `npm start` → http://localhost:3000
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Make sure the API in `../server` is running (`npm run dev`).
 
-### `npm run build`
+## Scripts
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+| Command         | Description                                            |
+| --------------- | ------------------------------------------------------ |
+| `npm start`     | Dev server with hot reload at http://localhost:3000    |
+| `npm run build` | Optimized production build (source maps off) to `build/` |
+| `npm test`      | Test runner in watch mode                              |
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Notes
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- The 3D scene is mounted once behind every route and respects
+  `prefers-reduced-motion`. Routes are code-split so the first paint is fast.
+- Password rules mirror the backend (≥ 8 chars + a special character).

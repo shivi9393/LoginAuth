@@ -62,11 +62,13 @@ function passwordVerify(errors = {}, values){
     if(!values.password){
         errors.password = toast.error("Password Required...!");
     } else if(values.password.includes(" ")){
-        errors.password = toast.error("Wrong Password...!");
-    }else if(values.password.length < 4){
-        errors.password = toast.error("Password must be more than 4 characters long");
+        errors.password = toast.error("Password cannot contain spaces...!");
+    }else if(values.password.length < 8){
+        errors.password = toast.error("Password must be at least 8 characters long");
+    }else if(values.password.length > 128){
+        errors.password = toast.error("Password is too long");
     }else if(!specialChars.test(values.password)){
-        errors.password = toast.error("Password must have special character");
+        errors.password = toast.error("Password must include a special character");
     }
 
     return errors;
